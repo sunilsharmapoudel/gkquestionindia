@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question Code Generator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 20px auto;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        padding: 20px;
+        background-color: #007bff;
+        color: #fff;
+        text-align: center;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+
+    .content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    h2 {
+        margin-top: 0;
+        text-align: center;
+        font-size: x-large;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    input, select {
+        width: calc(100% - 12px);
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    #generatedCodeTextTextarea {
+        width: 100%;
+        height: 300px;
+        resize: none;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    #copyCodeButton {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    #minifyCodeButton {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+
+
+    @media (max-width: 767px) {
+        .content {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Question Code Generator < / ></h1   >
+    </div>
+
+    <div class="content">
+        <div>
+            <label for="question">Question:</label>
+            <input type="text" id="question" placeholder="Enter your question">
+
+            <label for="option1">Option 1:</label>
+            <input type="text" id="option1" placeholder="Enter option 1">
+
+            <label for="option2">Option 2:</label>
+            <input type="text" id="option2" placeholder="Enter option 2">
+
+            <label for="option3">Option 3:</label>
+            <input type="text" id="option3" placeholder="Enter option 3">
+
+            <label for="option4">Option 4:</label>
+            <input type="text" id="option4" placeholder="Enter option 4">
+
+            <label for="correctOption">Correct Option:</label>
+            <select id="correctOption">
+                <option value="a">Option 1</option>
+                <option value="b">Option 2</option>
+                <option value="c">Option 3</option>
+                <option value="d">Option 4</option>
+            </select>
+
+            <button onclick="generateCode()">Generate Code</button>
+        </div>
+
+        <div>
+            <h2>Generated Code</h2>
+            <textarea id="generatedCodeTextTextarea" readonly></textarea>
+            <button id="copyCodeButton" onclick="copyCode()" disabled>Copy Code</button>
+            <button id="minifyCodeButton" onclick="minifyCode()">Minify Code</button>
+            <button id="beautifyCodeButton" onclick="beautifyCode()">Beautify Code</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let questionCounter = 0;
+    let wrapperCounter = 0;
+
+    function generateCode() {
+        const question = document.getElementById("question").value.trim();
+        const option1 = document.getElementById("option1").value.trim();
+        const option2 = document.getElementById("option2").value.trim();
+        const option3 = document.getElementById("option3").value.trim();
+        const option4 = document.getElementById("option4").value.trim();
+        const correctOption = document.getElementById("correctOption").value;
+
+        if (!question || !option1 || !option2 || !option3 || !option4) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        questionCounter++;
+
+        let code = `<div class="wrapper">
+                <div class="question">
+                    <p>${questionCounter}. ${question}</p>
+                </div>
+                <div class="options-group">
+                    <div class="options a${correctOption === 'a' ? ' correct' : ''}"><p>1. ${option1}</p></div>
+                    <div class="options b${correctOption === 'b' ? ' correct' : ''}"><p>2. ${option2}</p></div>
+                    <div class="options c${correctOption === 'c' ? ' correct' : ''}"><p>3. ${option3}</p></div>
+                    <div class="options d${correctOption === 'd' ? ' correct' : ''}"><p>4. ${option4}</p></div>
+                </div>
+            </div>`;
+
+        if (questionCounter % 5 === 0) {
+            code += '<div class="ads-wrapper"><div class="ads"></div></div>';
+        }
+
+        const generatedCodeTextTextarea = document.getElementById("generatedCodeTextTextarea");
+        generatedCodeTextTextarea.value += code + "\n";
+        document.getElementById("copyCodeButton").disabled = false;
+    }
+
+    function copyCode() {
+        const generatedCodeTextTextarea = document.getElementById("generatedCodeTextTextarea");
+        generatedCodeTextTextarea.select();
+        document.execCommand("copy");
+        alert("Code copied to clipboard!");
+    }
+
+    function minifyCode() {
+        const generatedCodeTextTextarea = document.getElementById("generatedCodeTextTextarea");
+        generatedCodeTextTextarea.value = minifyHTML(generatedCodeTextTextarea.value);
+    }
+
+    function minifyHTML(html) {
+        return html.replace(/<!--[\s\S]*?-->/g, "").replace(/[ \t]+/g, " ").replace(/>\s+</g, "><").trim();
+    }
+
+    function beautifyCode() {
+    const generatedCodeTextTextarea = document.getElementById("generatedCodeTextTextarea");
+    const beautifiedCode = beautifyHTML(generatedCodeTextTextarea.value);
+    generatedCodeTextTextarea.value = beautifiedCode;
+}
+
+function beautifyHTML(html) {
+    const formattedHTML = html.replace(/></g, ">\n<"); // Add new line after each tag
+    return formattedHTML;
+}
+
+
+</script>
+
+</body>
+</html>
